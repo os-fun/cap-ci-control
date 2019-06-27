@@ -1,0 +1,24 @@
+image: "opensuse/leap:latest"
+type: "docker"
+name: "Build SCF helm charts"
+source: "https://github.com/os-fun/bkindwscf.git"
+script:
+- zypper ref
+- zypper in -y git zip wget docker ruby gzip make
+- pushd artefacts
+- git clone --recurse-submodules https://github.com/SUSE/scf 
+- pushd scf
+- git checkout $BRANCH
+- git submodule update --recursive --force && git submodule foreach --recursive 'git checkout . && git clean -fdx'
+- source .envrc
+- ./bin/dev/install_tools.sh
+- source .envrc
+- env
+- make vagrant-prep
+- make helm bundle-dist
+- cp -rfv output/ ../
+- popd
+- rm -rf scf
+environment:
+- BRANCH={{.Branch}}
+- BOSH_CLI_VERSION={{.BoshCLIVersion}}
