@@ -11,11 +11,12 @@ script:
 - git checkout $BRANCH
 - git submodule update --recursive --force && git submodule foreach --recursive 'git checkout . && git clean -fdx'
 - source .envrc
+- sed -i 's|exit 1||' make/kube-dist
+- sed -i 's|exit 1||' make/bundle-dist
 - ./bin/dev/install_tools.sh
 - source .envrc
 - env
 - make vagrant-prep publish
-- sed -i 's|exit 1||' make/kube-dist
 - make bundle-dist
 - cp -rfv output/*.zip ../../artefacts
 environment:
