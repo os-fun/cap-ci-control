@@ -1,0 +1,11 @@
+image: "cicontrol/scf-builder:latest"
+type: "docker"
+name: "Build scf-builder docker image"
+source: "https://github.com/os-fun/cap-ci-control.git"
+storage: "dockerghcreds"
+
+script:
+- bash storage/docker_login.sh
+- pushd helm-charts
+- docker build -t cicontrol/scf-builder:latest .
+- docker push cicontrol/scf-builder:latest

@@ -1,0 +1,22 @@
+image: "cicontrol/scf-builder:latest"
+type: "docker"
+name: "Build OpenSUSE Fissile stemcell (develop)"
+storage: "dockerghcreds"
+script:
+- bash storage/docker_login.sh
+- pushd storage
+- git clone https://github.com/SUSE/bosh-linux-stemcell-builder.git
+- pushd bosh-linux-stemcell-builder
+- git checkout $BRANCH
+- sed -i 's|RUN .*install-ovf.sh .*||' ci/docker/suse-os-image-stemcell-builder/Dockerfile
+- sed -i 's|ADD .*ovftool.*||' ci/docker/suse-os-image-stemcell-builder/Dockerfile
+- sed -i 's|wget .*||' make/os-image
+- sed -i 's|-t -i||' make/os-image
+- make all
+- docker push $STEMCELL_IMAGE:$STEMCELL_VERSION
+- popd
+environment:
+- BRANCH={{.Branch}}
+- STEMCELL_IMAGE=cicontrol/stemcell
+- STEMCELL_VERSION={{.Branch}}
+- USER=root

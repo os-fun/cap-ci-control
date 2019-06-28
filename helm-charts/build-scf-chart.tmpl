@@ -1,11 +1,11 @@
-image: "opensuse/leap:latest"
+image: "cicontrol/scf-builder:latest"
 type: "docker"
 name: "Build SCF helm charts"
 source: "https://github.com/os-fun/bkindwscf.git"
+storage: "dockerghcreds"
 script:
-- zypper ref
-- zypper in -y git zip wget docker ruby gzip make
-- pushd artefacts
+- bash storage/docker_login.sh
+- pushd storage
 - git clone --recurse-submodules https://github.com/SUSE/scf 
 - pushd scf
 - git checkout $BRANCH
@@ -14,11 +14,13 @@ script:
 - ./bin/dev/install_tools.sh
 - source .envrc
 - env
-- make vagrant-prep
-- make helm bundle-dist
-- cp -rfv output/ ../
+- make vagrant-prep publish
+- cp -rfv output/*.zip ../../artefacts
 - popd
-- rm -rf scf
 environment:
 - BRANCH={{.Branch}}
 - BOSH_CLI_VERSION={{.BoshCLIVersion}}
+- FISSILE_DOCKER_REGISTRY=
+- FISSILE_DOCKER_ORGANIZATION=cicontrol
+- FISSILE_DOCKER_REPO=stemcell
+- FISSILE_STEMCELL_VERSION=develop

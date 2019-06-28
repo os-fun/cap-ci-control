@@ -1,0 +1,14 @@
+#!/bin/bash
+set -ex
+
+BRANCH="${BRANCH:-develop}"
+BOSH_CLI_VERSION="${BOSH_CLI_VERSION:-b24ba90de427208cc29055c394e91b5bcbf17806}"
+
+mottainai-cli task compile helm-charts/build-scf-chart.tmpl \
+                            -s Branch=$BRANCH \
+                            -s BoshCLIVersion=$BOSH_CLI_VERSION \
+                            -o build-scf-chart.yaml
+
+mottainai-cli task create --yaml build-scf-chart.yaml
+
+rm -rf build-scf-chart.yaml
