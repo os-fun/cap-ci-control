@@ -15,8 +15,9 @@ script:
 - source .envrc
 - env
 - make vagrant-prep publish
+- sed -i 's|exit 1||' make/kube-dist
+- make bundle-dist
 - cp -rfv output/*.zip ../../artefacts
-- popd
 environment:
 - BRANCH={{.Branch}}
 - BOSH_CLI_VERSION={{.BoshCLIVersion}}
