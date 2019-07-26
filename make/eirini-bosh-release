@@ -1,0 +1,12 @@
+#!/bin/bash
+set -ex
+
+BRANCH="${BRANCH:-develop}"
+
+mottainai-cli task compile eirini/eirini-bosh-release/build.tmpl \
+                            -s Branch=$BRANCH \
+                            -o build.yaml
+
+mottainai-cli task create --yaml build.yaml
+
+rm -rf build.yaml

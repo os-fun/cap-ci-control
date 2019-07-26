@@ -3,8 +3,10 @@ image: splatform/bosh-cli:b24ba90de427208cc29055c394e91b5bcbf17806
 source: https://github.com/cloudfoundry-community/eirini-bosh-release.git
 name: "Build Eirini bosh release"
 tag_namespace: eirini-bosh-release-master
+publish_mode: "append"
 script:
+  - git checkout {{.Branch}}
   - git submodule update --init --recursive
   - bosh reset-release
-  - bosh create-release --tarball=artefacts/eirini-bosh-release-master.tgz
+  - bosh create-release --tarball=artefacts/eirini-bosh-release-{{.Branch}}.tgz
 
