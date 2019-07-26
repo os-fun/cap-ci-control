@@ -1,0 +1,48 @@
+image: "cicontrol/scf-builder:latest"
+type: "docker"
+name: "Test and deploys SCF helm charts"
+source: "https://github.com/SUSE/bkindwscf.git"
+namespace: charts
+script:
+# Kills other clusters
+- make deps clean >/dev/null 2>&1
+- zypper in -y jq curl which unzip >/dev/null 2>&1
+- curl -LO https://storage.googleapis.com/kubernetes-release/release/$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)/bin/linux/amd64/kubectl
+    && chmod +x ./kubectl && mv ./kubectl /usr/local/bin/kubectl
+- curl -L "https://packages.cloudfoundry.org/stable?release=linux64-binary&source=github" | tar -zx
+- mv cf /usr/local/bin
+- chmod +x /usr/local/bin/cf
+- curl -L https://git.io/get_helm.sh | bash
+- make kind >/dev/null 2>&1
+- make docker-kubeconfig
+{{if .Chart}}
+- pushd build
+- mv ../artefacts/{{.Chart}} ./
+- echo "Unzipping chart from namespace"
+- unzip {{.Chart}} >/dev/null 2>&1
+- popd
+{{else}}
+- make chart
+{{end}}
+- make gen-config setup scf login
+- make smoke
+
+environment:
+{{if .ChartURL}}
+- CHART_URL={{.ChartURL}}
+{{end}}
+{{if .Registry}}
+- DOCKER_REGISTRY={{.Registry}} 
+{{else}}
+- DOCKER_REGISTRY=registry.hub.docker.com
+{{end}}
+{{if .Org}}
+- DOCKER_ORG={{.Org}}
+{{else}}
+- DOCKER_ORG=cicontrol
+{{end}}
+{{if .Eirini}}
+- ENABLE_EIRINI={{.Eirini}}
+{{else}}
+- ENABLE_EIRINI=true
+{{end}}

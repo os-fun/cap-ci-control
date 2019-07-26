@@ -13,3 +13,7 @@ clean-nodes:
 .PHONY: eirini-bosh-release
 eirini-bosh-release:
 	make/eirini-bosh-release
+
+.PHONY: test
+test:
+	make/test-chart-bkindwscf

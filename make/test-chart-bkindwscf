@@ -1,0 +1,11 @@
+#!/bin/bash
+set -ex
+
+mottainai-cli task compile helm-charts/test.tmpl \
+                            -s ChartURL=$CHART_URL \
+                            -s Chart=$CHART \
+                            -o build.yaml
+
+mottainai-cli task create --yaml build.yaml
+
+rm -rf build.yaml
