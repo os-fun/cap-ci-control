@@ -3,6 +3,9 @@ type: "docker"
 name: "Build SCF helm charts"
 source: "https://github.com/os-fun/bkindwscf.git"
 storage: "dockerghcreds"
+tag_namespace: charts
+publish_mode: "append"
+
 script:
 - bash storage/docker_login.sh
 - pushd storage
